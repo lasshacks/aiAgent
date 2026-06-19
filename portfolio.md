@@ -126,21 +126,69 @@ qwen3:4b
 
 ---
 
-# 02. IDE Agent (예정)
+# 02. IDE Agent (진행 중 🔄)
 
 ## 목표
 
-VSCode에서 AI Agent를 활용하여 코드 작성 보조
+AI 기반 개발 도구를 활용하여 개발 생산성 향상 및 Agentic Development 방식 학습
 
-## 기술 스택 후보
+## 진행 내용
 
-- Continue
-- Cline
-- RooCode
+### 1. IDE Agent 도구 선택
+
+도구 비교:
+- **Continue**: 범용 LLM 통합 (권장)
+- **Cline**: MCP 기반 고급 자동화
+- GitHub Copilot: API 기반 (클라우드만)
+
+### 2. Continue 설치 및 설정 ✅
+
+설치 완료
+
+```bash
+code --install-extension Continue.continue
+Version: 2.0.0
+```
+
+설정 파일: `~/.continue/config.json`
+
+설정 내용:
+- Qwen3 4B (Ollama)
+- Gemma 3B (Ollama)
+- Tab Autocomplete 활성화
+
+Ollama 연동:
+```
+http://172.30.236.141:11434
+```
+
+API 테스트: ✅ 정상 작동
+
+### 3. Cline 설치 및 설정 ✅
+
+설치 완료
+
+```bash
+code --install-extension saoudrizwan.claude-dev
+Version: 3.89.2
+```
+
+주요 특징:
+- MCP (Model Context Protocol) 기반
+- 파일 시스템 자동 접근
+- Git 자동 통합
+- 고급 Agent 기능
+
+### 4. 다음 단계
+
+- [ ] Cline Custom Model 설정 테스트
+- [ ] Continue vs Cline 코드 생성 비교
+- [ ] 실제 프로젝트 분석 실습
+- [ ] 자동화 워크플로우 구축
 
 ---
 
-# 03. Agent Basic (예정)
+# 03. Agent Basic (예정 ⏳)
 
 ## 목표
 

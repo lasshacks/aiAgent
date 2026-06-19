@@ -175,3 +175,83 @@ ss -tlnp | grep 11434
 # WSL IP 확인
 hostname -I
 ```
+
+---
+
+# Decision-003
+
+## 날짜
+
+2026-06-19
+
+## 상태
+
+Accepted
+
+## 제목
+
+IDE Agent 도구로 Continue + Cline 선택
+
+## 배경
+
+AI 기반 개발 생산성 향상을 위해 IDE Agent 도구 필요
+
+## 검토 대안
+
+1. GitHub Copilot (API 기반, 클라우드만)
+2. Continue (다중 LLM, 범용)
+3. Cline (MCP 기반, 고급 자동화)
+4. Cursor (전용 에디터, 비용 있음)
+
+## 결정
+
+Continue + Cline 병행 사용
+
+## 결정 이유
+
+**Continue**:
+- Ollama와의 연동이 가장 간단
+- 다양한 LLM 제공자 지원
+- 커뮤니티 크고 자료 많음
+- 코드 자동 완성 우수
+
+**Cline**:
+- MCP 기반 최신 기술
+- 파일/Git 자동 조작 가능
+- 고급 Agent 기능
+- 프로젝트 분석 강력
+
+## Trade-off
+
+장점
+
+- 두 도구의 장점 모두 활용
+- 상황에 맞는 도구 선택 가능
+- 확장성 높음
+
+단점
+
+- 설정 복잡도 증가
+- 학습 곡선 가파름
+
+## 결과
+
+두 도구 모두 설치 완료, Ollama 연동 설정 진행 중
+
+## 관련 문서
+
+- docs/02_IDE_Agent.md
+- docs/02_IDE_Agent_Setup_Guide.md
+
+## 관련 명령어
+
+```bash
+# Continue 설치
+code --install-extension Continue.continue
+
+# Cline 설치
+code --install-extension saoudrizwan.claude-dev
+
+# Ollama API 테스트
+curl http://172.30.236.141:11434/api/tags
+```

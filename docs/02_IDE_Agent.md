@@ -94,55 +94,290 @@ LLM
 
 ---
 
-## 실습 절차
+## Track 2 진행 현황
 
-### 1. VS Code 설치
+### 2026-06-19 - Continue 설치
 
-확인 사항
+#### 1. Continue VS Code Extension 설치
 
-* 최신 버전 설치
-* Extension 사용 가능 여부 확인
+설치 완료
 
----
-
-### 2. GitHub Copilot 설치
-
-VS Code Extension
-
-```text id="copilot1"
-GitHub Copilot
+```bash
+code --install-extension Continue.continue
 ```
 
-로그인 후 활성화
+결과
+
+```text
+Extension 'continue.continue' v2.0.0 was successfully installed.
+```
+
+✅ 설치 완료
 
 ---
 
-### 3. Cursor 설치
+#### 2. Continue 설정 파일 생성
 
-공식 사이트 다운로드
+경로
+
+```text
+~/.continue/config.json
+```
+
+설정 내용
+
+```json
+{
+  "models": [
+    {
+      "title": "Qwen3 Local",
+      "provider": "ollama",
+      "model": "qwen3:4b",
+      "apiBase": "http://172.30.236.141:11434"
+    },
+    {
+      "title": "Gemma Local",
+      "provider": "ollama",
+      "model": "gemma3:4b",
+      "apiBase": "http://172.30.236.141:11434"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "Qwen3 Tab Complete",
+    "provider": "ollama",
+    "model": "qwen3:4b",
+    "apiBase": "http://172.30.236.141:11434"
+  },
+  "allowAnonymousTelemetry": false,
+  "userEmail": "user@local",
+  "temperature": 0.7
+}
+```
+
+✅ 설정 완료
+
+---
+
+#### 3. Ollama 연동 확인
+
+Ollama 상태
+
+```bash
+systemctl status ollama
+```
+
+결과
+
+```text
+● ollama.service - Ollama Service
+   Active: active (running)
+   Memory: 896.0M
+```
+
+✅ Ollama 정상 실행
+
+---
+
+#### 4. Ollama API 테스트
+
+모델 목록 조회
+
+```bash
+curl http://172.30.236.141:11434/api/tags
+```
+
+결과
+
+```json
+{
+  "models": [
+    {
+      "name": "qwen3:4b",
+      "model": "qwen3:4b",
+      "size": 2497293931,
+      "details": {
+        "parameter_size": "4.0B",
+        "context_length": 262144
+      }
+    }
+  ]
+}
+```
+
+✅ API 정상 작동
+
+---
+
+## 실습 절차
+
+### 1. Continue 사용법
+
+VS Code에서 Continue 탭 열기
+
+```text
+Ctrl+Shift+X → Continue 확인
+또는
+Ctrl+L (Continue Chat 오픈)
+```
 
 주요 기능
 
-* Agent Mode
-* Chat
-* Code Generation
-* Code Review
+* Chat: `Ctrl+L`
+* Tab Autocomplete: 코드 입력 시 자동 제안
+* Command Palette: `Cmd+Shift+P` → "Continue"
 
 ---
 
-### 4. Codex 설치
+#### 5. LLM 응답 테스트
 
-설치 확인
+코드 생성 테스트
 
-```bash id="codex11"
-codex --version
+```bash
+curl -s http://172.30.236.141:11434/api/generate \
+-d '{
+  "model": "qwen3:4b",
+  "prompt": "Python으로 간단한 Hello World 프로그램을 만들어줘",
+  "stream": false
+}'
 ```
 
-예상 학습 내용
+✅ LLM 응답 정상
 
-* 코드 생성
-* 프로젝트 분석
-* 문서 생성
+---
+
+### 5. Cline VS Code Extension 설치
+
+설치 완료
+
+```bash
+code --install-extension saoudrizwan.claude-dev
+```
+
+결과
+
+```text
+Extension 'saoudrizwan.claude-dev' v3.89.2 was successfully installed.
+```
+
+✅ 설치 완료
+
+---
+
+### 6. Cline 아키텍처
+
+```text
+VS Code
+  ↓
+Cline Extension (MCP 기반)
+  ↓
+도구 및 리소스 자동 발견
+  ↓
+LLM 호출
+  ↓
+파일/Git 자동 조작
+```
+
+---
+
+### 7. Cline vs Continue 비교
+
+| 항목 | Continue | Cline |
+|------|----------|-------|
+| 설정 난이도 | ⭐ 쉬움 | ⭐⭐ 중간 |
+| 코드 자동 완성 | ✅ 우수 | ⚠️ 제한적 |
+| 프로젝트 분석 | ⭐ 기본 | ⭐⭐⭐ 강력 |
+| 파일 자동 조작 | ❌ 없음 | ✅ 있음 |
+| Git 통합 | ❌ 없음 | ✅ 있음 |
+| MCP 지원 | ⚠️ 제한적 | ✅ 완벽 |
+| 로컬 LLM | ✅ 우수 | ⚠️ 복잡 |
+
+---
+
+## 실습 절차
+
+### 1. Continue 사용법
+
+VS Code에서 Continue 탭 열기
+
+```text
+Ctrl+Shift+X → Continue 확인
+또는
+Ctrl+L (Continue Chat 오픈)
+```
+
+주요 기능
+
+* Chat: `Ctrl+L`
+* Tab Autocomplete: 코드 입력 시 자동 제안
+* Command Palette: `Cmd+Shift+P` → "Continue"
+
+---
+
+### 2. Cline 설정 및 사용법
+
+VS Code에서 Cline 패널 열기
+
+```text
+View → Command Palette → "Cline: Open"
+또는
+좌측 Sidebar 아이콘
+```
+
+Ollama 연동 설정
+
+```text
+Cline Settings → Models → Custom/Other
+Endpoint: http://172.30.236.141:11434
+Model: qwen3:4b
+```
+
+---
+
+### 3. 코드 생성 실습 (Continue)
+
+사용자 프롬프트
+
+```text
+"Spring Boot REST API로 간단한 CRUD 만들어줘"
+```
+
+결과
+
+```
+- Controller 생성
+- Service 생성  
+- Repository 생성
+- DTO 생성
+```
+
+---
+
+### 4. 프로젝트 분석 (Cline)
+
+사용자 프롬프트
+
+```text
+"@all 이 프로젝트의 구조를 분석해서 README.md 만들어줘"
+```
+
+Cline 자동 수행
+
+```
+1. 파일 시스템 스캔
+2. 프로젝트 구조 분석
+3. README.md 생성
+4. Git 커밋
+```
+
+---
+
+## 다음 단계
+
+Track 3: Agent Basic (LangChain/LangGraph 학습)
+
+- [ ] Tool Calling 이해
+- [ ] Agent Workflow 학습
+- [ ] Multi-Agent Pattern 실습
 
 ---
 
