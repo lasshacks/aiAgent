@@ -399,6 +399,34 @@ ollama run qwen3:4b
 
 대상
 
+---
+
+### Troubleshooting: Continue extension (streaming & schema)
+
+- 증상: VS Code `Problems`에 "Problems loading reference 'file:///c:/Users/sedof/.vscode/extensions/continue.continue-1.2.16-win32-x64...'" 오류가 지속적으로 발생함. Continue UI가 로컬 모델을 드롭다운에서 보여주지 않음.
+- 원인 발견:
+  - 사용자 `settings.json`에 오래된 확장(continue.continue-1.2.16)을 가리키는 `yaml.schemas` 항목이 남아 있었음.
+  - Ollama 스트리밍 응답은 NDJSON 토큰 청크로 전달되므로 Continue UI에서 생성 과정을 바로 표시하는 데 적합함.
+- 조치 내용:
+  1. `settings.json`에서 오래된 schema 참조를 제거하여 VS Code가 더 이상 존재하지 않는 확장 경로를 참조하지 않도록 수정함.
+ 2. `c:\Users\sedof\.continue\config.yaml`에 각 모델 항목에 `stream: true`를 추가하여 Continue가 Ollama에 스트리밍 호출을 하도록 설정함.
+ 3. WSL에서 `curl` 스트리밍 호출로 `qwen3:4b`의 토큰 생성이 정상 동작함을 확인함 (`stream=true` 사용).
+- 결과: Ollama의 스트리밍과 비스트리밍 호출 모두 정상 응답을 반환함을 확인. Continue에는 점진적으로 응답을 표시하기 위해 `stream: true`를 사용함.
+- 권장 다음 단계:
+  1. VS Code를 재시작(또는 Reload Window)해서 Continue가 새 설정(`c:\Users\sedof\.continue\config.yaml`)을 읽도록 함.
+  2. Continue에서 모델 드롭다운에 `qwen3-local`이 보이는지 확인하고 채팅 생성 테스트 수행.
+  3. 문제가 지속될 경우: 확장 제거(`code --uninstall-extension Continue.continue`), 남은 폴더 삭제(`C:\Users\sedof\.vscode\extensions\continue.*`), 재설치 후 로그 검토 권장.
+
+참고: 스트리밍 테스트 명령
+
+```bash
+curl -sN --max-time 120 -X POST 'http://172.30.236.141:11434/api/generate' \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"qwen3:4b","prompt":"Hello from test","stream":true}' | head -n 40
+```
+
+이 섹션은 추후 발생하는 IDE Agent 관련 문제를 빠르게 진단하는 용도로 업데이트하세요.
+
 * 현재 업무 프로젝트
 * 개인 프로젝트
 

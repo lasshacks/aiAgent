@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiplication Calculator</title>
+</head>
+<body>
+    <h1>Multiplication Calculator</h1>
+    <form action="/multiply" method="post">
+        <input type="number" name="num1" placeholder="First number">
+        <input type="number" name="num2" placeholder="Second number">
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const num1 = document.querySelector('input[name="num1"]').value;
+            const num2 = document.querySelector('input[name="num2"]').value;
+            fetch('/multiply', {
+                method: 'POST',
+                body: new URLSearchParams({ num1, num2 })
+            })
+            .then(response => response.text())
+            .then(result => {
+                document.getElementById('result').innerText = result;
+            });
+        });
+    </script>
+</body>
+</html>

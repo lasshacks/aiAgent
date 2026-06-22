@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>간단 덧셈 앱</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, Pretendard, system-ui, sans-serif;
+      background: #0b1020;
+      color: #f8fafc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 20% 20%, #2563eb55, transparent 35%),
+        radial-gradient(circle at 80% 80%, #7c3aed55, transparent 35%),
+        #0b1020;
+    }
+
+    main {
+      width: min(100%, 520px);
+      padding: 38px;
+      border: 1px solid #ffffff20;
+      border-radius: 24px;
+      background: #111827dd;
+      box-shadow: 0 24px 80px #0008;
+      backdrop-filter: blur(14px);
+    }
+
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p { margin: 0 0 28px; color: #94a3b8; }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label { display: grid; gap: 8px; color: #cbd5e1; font-size: .9rem; }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      outline: none;
+      background: #0f172a;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px #3b82f633; }
+    .plus { padding-bottom: 13px; color: #60a5fa; font-size: 1.4rem; }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(1.12); }
+
+    #result {
+      min-height: 82px;
+      margin-top: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #0f172a;
+      color: #a5b4fc;
+      font-size: 1.65rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    #result.error { color: #fca5a5; font-size: 1rem; }
+
+    @media (max-width: 480px) {
+      main { padding: 26px; }
+      .inputs { grid-template-columns: 1fr; }
+      .plus { padding: 0; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>덧셈 계산기</h1>
+    <p>두 숫자를 입력하면 Python 백엔드가 결과를 계산합니다.</p>
+
+    <form id="addition-form">
+      <div class="inputs">
+        <label>첫 번째 숫자<input id="first" type="number" step="any" value="2" required></label>
+        <span class="plus">+</span>
+        <label>두 번째 숫자<input id="second" type="number" step="any" value="3" required></label>
+      </div>
+      <button type="submit">계산하기</button>
+    </form>
+
+    <div id="result" aria-live="polite">결과: 5</div>
+  </main>
+
+  <script>
+    const form = document.querySelector('#addition-form');
+    const result = document.querySelector('#result');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      result.classList.remove('error');
+      result.textContent = '계산 중…';
+
+      try {
+        const response = await fetch('/api/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first: document.querySelector('#first').value,
+            second: document.querySelector('#second').value
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        result.textContent = `결과: ${data.result}`;
+      } catch (error) {
+        result.classList.add('error');
+        result.textContent = error.message || '계산 중 오류가 발생했습니다.';
+      }
+    });
+  </script>
+</body>
+</html>

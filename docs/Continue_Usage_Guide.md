@@ -218,3 +218,29 @@ Qwen3 4B 기준:
 2. [ ] 실제 프로젝트에 적용
 3. [ ] Cline과의 차이점 비교
 4. [ ] Track 3: Agent Basic 진행
+
+## 최근 업데이트 (요약)
+
+- [x] `c:\Users\sedof\.continue\config.yaml`에 각 모델에 `stream: true` 추가 — Continue가 Ollama에 스트리밍 호출을 하도록 설정함.
+- [x] Ollama `qwen3:4b`에 대한 스트리밍 호출을 `curl`로 확인함 (NDJSON 토큰 청크 출력 확인).
+- [ ] Continue UI에서 모델 드롭다운 및 코드 삽입 테스트 — 대기 중 (VS Code 재시작 후 확인 필요).
+
+스트리밍 테스트(터미널에서 실행):
+
+```bash
+curl -sN --max-time 120 -X POST 'http://172.30.236.141:11434/api/generate' \
+    -H 'Content-Type: application/json' \
+    -d '{"model":"qwen3:4b","prompt":"Hello from test — reply with the model id only.","stream":true}' \
+| python3 -u -c "import sys,json
+out=''
+for line in sys.stdin:
+    line=line.strip()
+    if not line: continue
+    j=json.loads(line)
+    out += j.get('thinking','') or j.get('response','')
+    if j.get('done'):
+        break
+print(out)"
+```
+
+참고: Ollama는 스트리밍과 비스트리밍 호출을 모두 지원합니다. Continue에는 생성되는 응답을 UI에 점진적으로 표시하기 위해 `stream: true`를 사용합니다.
