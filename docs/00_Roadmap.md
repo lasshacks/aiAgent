@@ -232,7 +232,7 @@ ollama run qwen3:4b
 
 * [ ] Local ChatGPT 구축
 * [ ] IDE Agent 구축
-* [ ] Agent 기초 학습
+* [x] Agent 기초 학습
 * [ ] MCP 구축
 * [ ] Kubernetes Agent 구축
 * [ ] Database Agent 구축

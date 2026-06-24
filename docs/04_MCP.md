@@ -319,12 +319,12 @@ Tool
 
 ### 환경 구축
 
-* [ ] MCP SDK 설치
-* [ ] MCP Server 구축
+* [x] MCP SDK 설치
+* [x] MCP Server 구축
 
 ### 실습
 
-* [ ] Hello Tool
+* [x] Hello Tool
 * [ ] File Tool
 * [ ] PostgreSQL Tool
 * [ ] Agent 연동
@@ -578,3 +578,58 @@ Observability
     ↓
 AI Operations Platform
 ```
+
+---
+
+## 2026-06-24 1차 실습 결과
+
+### 환경
+
+- Python MCP SDK: `mcp 1.28.0`
+- Transport: stdio
+- Server: `mcp_basic/server.py`
+- Client: `mcp_basic/client.py`
+
+stdio를 선택한 이유는 Continue, Cline, Claude Desktop 같은 MCP Host가 로컬 MCP Server를
+자식 프로세스로 실행하고 표준 입출력으로 JSON-RPC 메시지를 교환하는 구조를 먼저 이해하기
+위해서다. HTTP/FastAPI 기반 transport는 원격 서비스 단계에서 추가한다.
+
+### 구현 구조
+
+```text
+client.py
+  -> server.py 자식 프로세스 실행
+  -> initialize handshake
+  -> tools/list
+  -> tools/call
+  -> hello / add_numbers 실행
+  -> 결과 반환
+```
+
+### 실행
+
+```bash
+source .venv-wsl/bin/activate
+python3 -m pip install -r mcp_basic/requirements.txt
+python3 mcp_basic/client.py --tool hello --name "iteyes"
+python3 mcp_basic/client.py --tool add_numbers --a 12 --b 30
+```
+
+### 검증 결과
+
+```text
+[MCP] server=ai-platform-study
+[MCP] tools=['hello', 'add_numbers']
+[Tool] hello -> {"result": "안녕하세요, iteyes!"}
+
+[MCP] server=ai-platform-study
+[MCP] tools=['hello', 'add_numbers']
+[Tool] add_numbers -> {"result": 42.0}
+```
+
+MCP Server 기동, handshake, Tool discovery, Tool call과 structured result 반환까지 성공했다.
+다음 단계는 이 Client 호출을 Qwen Agent의 Tool 실행 경로와 연결하는 것이다.
+
+동일 명령을 WSL `.venv-wsl`에서도 재검증했으며 `hello`와 `add_numbers`가 모두 성공했다.
+중간의 `Processing request of type ListToolsRequest/CallToolRequest`는 MCP Server의 정상 처리
+로그이며 오류가 아니다.

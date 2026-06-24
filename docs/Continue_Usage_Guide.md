@@ -1,246 +1,175 @@
-# Continue 실습 가이드
+# Continue 사용 가이드
 
-## 설치 확인
+## 1. 현재 구성
 
-### VS Code에서 Continue 확인
+| 항목 | 값 |
+|---|---|
+| Continue | 2.1.0 |
+| Ollama | `http://172.30.236.141:11434` |
+| Agent 모델 | `qwen3:4b` |
+| Chat 비교 모델 | `gemma3:4b` |
+| 프로젝트 설정 | `.continue/config.json` |
+| 사용자 설정 | `C:\Users\sedof\.continue\config.yaml` |
 
-1. **Continue Tab 확인**
-   ```
-   좌측 Sidebar에서 "Continue" 아이콘 확인
-   또는 Ctrl+Shift+X → Continue 검색
-   ```
+## 2. 연결 확인
 
-2. **Continue Chat 열기**
-   ```
-   Ctrl+L (또는 Cmd+L on Mac)
-   또는 View → Command Palette → "Continue: Open"
-   ```
+브라우저에서 다음 주소를 열거나 터미널에서 API를 호출한다.
 
----
-
-## 사용 방법
-
-### 1단계: 모델 선택
-
-Continue Chat 열기 후:
-- 상단 드롭다운에서 모델 선택
-- 추천: "Qwen3 Local"
-
-### 2단계: 프롬프트 입력
-
-Chat 입력창에 다음 예제 입력:
-
+```text
+http://172.30.236.141:11434
 ```
-Python으로 간단한 REST API 만들어줘.
-- Flask 사용
-- GET /users 엔드포인트
-- 샘플 데이터 반환
-```
-
-### 3단계: 코드 생성 및 삽입
-
-Continue가 코드 생성 후:
-1. 코드 검토
-2. "Insert" 버튼 클릭
-3. 현재 파일에 삽입
-
----
-
-## 실습 예제 1: 간단한 함수
-
-### 프롬프트
-```
-Python으로 주어진 문자열이 팰린드롬인지 확인하는 함수를 만들어줘.
-주석도 달아줘.
-```
-
-### 예상 결과
-```python
-def is_palindrome(s):
-    """
-    문자열이 팰린드롬인지 확인하는 함수
-    
-    Args:
-        s: 확인할 문자열
-    
-    Returns:
-        bool: 팰린드롬이면 True, 아니면 False
-    """
-    s = s.lower().replace(" ", "")
-    return s == s[::-1]
-```
-
----
-
-## 실습 예제 2: 클래스 생성
-
-### 프롬프트
-```
-Python으로 Student 클래스를 만들어줘.
-- 속성: name, age, grade
-- 메서드: get_info() - 학생 정보 출력
-- __init__ 생성자 포함
-```
-
-### 예상 결과
-```python
-class Student:
-    """학생 정보를 관리하는 클래스"""
-    
-    def __init__(self, name, age, grade):
-        """
-        초기화 메서드
-        
-        Args:
-            name: 학생 이름
-            age: 학생 나이
-            grade: 학생 등급
-        """
-        self.name = name
-        self.age = age
-        self.grade = grade
-    
-    def get_info(self):
-        """학생 정보 출력"""
-        return f"이름: {self.name}, 나이: {self.age}, 등급: {self.grade}"
-```
-
----
-
-## 실습 예제 3: 데이터 처리
-
-### 프롬프트
-```
-Python에서 CSV 파일을 읽어서 데이터를 필터링하고 저장하는 코드를 만들어줘.
-- pandas 사용
-- 나이가 20 이상인 데이터만 필터링
-- 결과를 new_data.csv에 저장
-```
-
----
-
-## 실습 예제 4: 테스트 코드
-
-### 프롬프트
-```
-위의 is_palindrome 함수에 대한 unittest를 작성해줘.
-- 팰린드롬인 경우
-- 팰린드롬이 아닌 경우
-- 공백 포함 경우 테스트
-```
-
----
-
-## 고급 기능
-
-### Tab Autocomplete 활용
-
-파일을 작성하다가 코드 입력 중:
-1. 몇 글자 입력
-2. 자동으로 제안 표시
-3. Tab 키로 수용
-
-### 다중 회차 대화
-
-```
-사용자: "Python 함수 만들어줘"
-Continue: [코드 생성]
-
-사용자: "이제 주석 추가해줘"
-Continue: [주석 추가]
-
-사용자: "테스트 코드도 만들어줘"
-Continue: [테스트 코드 생성]
-```
-
----
-
-## 팁과 트러블슈팅
-
-### 팁 1: 컨텍스트 제공
-
-```
-"이전에 만든 Student 클래스를 사용해서 
-학생 목록을 관리하는 StudentManager 클래스를 만들어줘"
-```
-
-### 팁 2: 구체적인 요구사항
-
-```
-좋지 않은 예:
-"함수를 만들어줘"
-
-좋은 예:
-"입력된 리스트를 오름차순으로 정렬하는 함수를 만들어줘.
-버블 정렬 알고리즘 사용"
-```
-
-### 팁 3: 에러 수정
-
-코드에 에러가 있으면:
-```
-"이 코드의 에러를 찾아서 고쳐줘"
-[에러 발생 코드]
-```
-
----
-
-## Continue vs 직접 타이핑
-
-| 상황 | Continue 추천 |
-|------|---------------|
-| 반복적인 코드 | ⭐⭐⭐ |
-| 복잡한 로직 | ⭐⭐ |
-| 테스트 코드 | ⭐⭐⭐ |
-| 보일러플레이트 | ⭐⭐⭐⭐⭐ |
-| 문서화 | ⭐⭐⭐ |
-| 디버깅 | ⭐⭐ |
-
----
-
-## 성능 기대값
-
-Qwen3 4B 기준:
-- 간단한 함수: 5-10초
-- 중간 복잡도: 10-20초
-- 복잡한 코드: 20-30초+
-
-### 성능 개선 팁
-1. 구체적인 프롬프트 (설명 짧을수록 빠름)
-2. 작은 단위로 분할 요청
-3. 필요시 Gemma 3B로 전환 (더 빠름)
-
----
-
-## 다음 단계
-
-1. [ ] 위의 4가지 예제 모두 테스트
-2. [ ] 실제 프로젝트에 적용
-3. [ ] Cline과의 차이점 비교
-4. [ ] Track 3: Agent Basic 진행
-
-## 최근 업데이트 (요약)
-
-- [x] `c:\Users\sedof\.continue\config.yaml`에 각 모델에 `stream: true` 추가 — Continue가 Ollama에 스트리밍 호출을 하도록 설정함.
-- [x] Ollama `qwen3:4b`에 대한 스트리밍 호출을 `curl`로 확인함 (NDJSON 토큰 청크 출력 확인).
-- [ ] Continue UI에서 모델 드롭다운 및 코드 삽입 테스트 — 대기 중 (VS Code 재시작 후 확인 필요).
-
-스트리밍 테스트(터미널에서 실행):
 
 ```bash
-curl -sN --max-time 120 -X POST 'http://172.30.236.141:11434/api/generate' \
-    -H 'Content-Type: application/json' \
-    -d '{"model":"qwen3:4b","prompt":"Hello from test — reply with the model id only.","stream":true}' \
-| python3 -u -c "import sys,json
-out=''
-for line in sys.stdin:
-    line=line.strip()
-    if not line: continue
-    j=json.loads(line)
-    out += j.get('thinking','') or j.get('response','')
-    if j.get('done'):
-        break
-print(out)"
+curl http://172.30.236.141:11434/api/tags
 ```
 
-참고: Ollama는 스트리밍과 비스트리밍 호출을 모두 지원합니다. Continue에는 생성되는 응답을 UI에 점진적으로 표시하기 위해 `stream: true`를 사용합니다.
+현재 모델 목록에는 다음 두 모델이 있어야 한다.
+
+```text
+qwen3:4b
+gemma3:4b
+```
+
+## 3. 사용자 설정
+
+```yaml
+name: Local Config
+version: 1.0.0
+schema: v1
+models:
+  - name: qwen3-local
+    provider: ollama
+    model: qwen3:4b
+    apiBase: http://172.30.236.141:11434
+    stream: true
+    capabilities:
+      - tool_use
+  - name: gemma3-local
+    provider: ollama
+    model: gemma3:4b
+    apiBase: http://172.30.236.141:11434
+    stream: true
+```
+
+`qwen3:4b`는 Ollama에서 tools를 지원하므로 Agent에 사용한다. `gemma3:4b`는 tools를 지원하지 않으므로 Chat 모드에서만 비교한다.
+
+## 4. Chat 사용
+
+1. VS Code의 Continue 패널을 연다.
+2. 모델에서 `qwen3-local` 또는 `gemma3-local`을 선택한다.
+3. Mode Selector에서 `Chat`을 선택한다.
+4. 프롬프트를 입력한다.
+5. 생성된 코드가 필요하면 Apply를 사용하거나 직접 파일에 반영한다.
+
+간단한 확인 프롬프트:
+
+```text
+두 숫자를 더하는 Python 함수 add_numbers를 작성해줘.
+타입 힌트와 한국어 docstring을 포함해줘.
+```
+
+## 5. Agent 사용
+
+1. Continue 입력창 아래 Mode Selector의 `Chat`을 클릭한다.
+2. `Agent`를 선택한다.
+3. 모델이 `qwen3-local`인지 확인한다.
+4. 파일을 실제 생성하라는 요구사항을 포함해 프롬프트를 전송한다.
+5. 파일 변경이나 명령 실행 승인 창을 검토한 뒤 허용한다.
+6. 완료 후 생성 파일과 실행 결과를 직접 확인한다.
+
+멀티파일 확인 프롬프트:
+
+```text
+현재 프로젝트에 별도 폴더를 만들고 간단한 덧셈 웹 앱을 구현해줘.
+
+요구사항:
+- Python 표준 라이브러리만 사용
+- backend.py에서 HTTP 서버와 덧셈 API 제공
+- static/index.html에 숫자 두 개를 입력하는 화면 구현
+- 계산 버튼을 누르면 API를 호출해 결과 표시
+- WSL에서 python3 backend.py로 실행 가능
+- 필요한 파일을 실제로 생성하고 실행 방법도 알려줘
+```
+
+## 6. 결과 검증
+
+Agent가 완료했다고 답하더라도 다음 항목을 확인한다.
+
+- 요청한 연산과 파일명이 맞는가?
+- 입력값을 실제로 파싱하는가?
+- 결과가 하드코딩되어 있지 않은가?
+- 브라우저 GET 요청으로 정적 화면을 제공하는가?
+- API 경로를 구분하는가?
+- 잘못된 입력에 적절한 상태 코드를 반환하는가?
+- 실행 명령이 실제로 성공하는가?
+
+## 7. 실습 앱 실행
+
+Codex 기준 덧셈 앱:
+
+```bash
+python3 addition_app.py
+```
+
+```text
+http://localhost:8000
+```
+
+Continue 생성 후 보정한 곱셈 앱:
+
+```bash
+python3 continue_web_demo/backend.py
+```
+
+```text
+http://localhost:8001
+```
+
+## 8. 벤치마크
+
+Continue의 실행 중인 요청을 모두 중지한 다음 측정한다. 요청이 남아 있으면 Ollama 대기열 때문에 결과가 왜곡될 수 있다.
+
+```bash
+python3 benchmarks/ollama_model_benchmark.py
+```
+
+기록 항목:
+
+- 첫 응답 시간
+- 전체 완료 시간
+- 출력 토큰과 tokens/s
+- 문법 정상 여부
+- 요구사항 충족 여부
+- 도구 호출 여부
+- 생성 파일 수와 수정 횟수
+
+## 9. 문제 해결
+
+### 모델이 보이지 않음
+
+- `config.yaml`의 YAML 문법을 확인한다.
+- 모델명이 `qwen3:4b`, `gemma3:4b`인지 확인한다.
+- `Developer: Reload Window`를 실행한다.
+- `/api/tags`에서 모델 설치 여부를 확인한다.
+
+### Agent가 보이지 않거나 도구를 사용하지 못함
+
+- Qwen3 설정에 `capabilities: [tool_use]`가 적용됐는지 확인한다.
+- Gemma3 4B는 도구 호출 모델로 사용하지 않는다.
+- Mode Selector에서 Chat이 아닌 Agent를 선택한다.
+
+### 응답이 지나치게 느림
+
+- Continue의 이전 요청을 Stop으로 종료한다.
+- 동시에 여러 모델 요청을 실행하지 않는다.
+- Ollama `/api/ps`에서 로드된 모델을 확인한다.
+- 작은 프롬프트로 API 응답을 먼저 검사한다.
+
+### 스키마 경로 오류
+
+VS Code `settings.json`의 `yaml.schemas`에서 삭제된 Continue 버전 경로를 제거하고 현재 설치 버전만 남긴다.
+
+## 10. 관련 문서
+
+- [IDE Agent 개요](02_IDE_Agent.md)
+- [실측 및 비교 결과](Continue_Local_LLM_Benchmark_Report.md)

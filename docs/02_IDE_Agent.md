@@ -1,775 +1,113 @@
-# 02_IDE_Agent
+# 02 IDE Agent
 
 ## 목표
 
-AI 기반 개발 도구를 활용하여 개발 생산성을 향상시키고, Agent 기반 개발 방식(Agentic Development)을 이해한다.
+VS Code에 로컬·원격 LLM을 연결하고 Chat, 코드 편집, Agent 도구 호출을 직접 검증한다. 단순 설치 여부가 아니라 실제 파일 생성, 실행 성공, 수정 횟수와 응답 시간을 비교한다.
 
-최종 목표
+## IDE Agent란?
 
-* AI 코딩 Assistant 활용
-* 코드 생성 자동화
-* 코드 리뷰 자동화
-* 문서 생성 자동화
-* Agent 기반 개발 방식 이해
-* AI 개발 워크플로우 구축
+IDE Agent는 코드 편집기 안에서 프로젝트 컨텍스트를 읽고 다음 작업을 수행하는 AI 도구다.
 
----
+- 코드 생성과 수정
+- 여러 파일 탐색과 변경
+- 터미널 명령 실행
+- 오류 분석과 테스트
+- Git 및 외부 도구 연동
 
-## 학습 내용
+일반 Chat이 답변을 생성하는 데 집중한다면 Agent는 도구를 호출해 실제 프로젝트 상태를 변경한다.
 
-### IDE Agent란?
-
-IDE 내부에서 동작하며 개발자의 작업을 지원하는 AI Agent를 의미한다.
-
-주요 기능
-
-* 코드 생성
-* 코드 수정
-* 리팩토링
-* 테스트 코드 생성
-* 문서 생성
-* 코드 리뷰
-
----
-
-### AI 코딩 도구 비교
-
-| 도구             | 특징            |
-| -------------- | ------------- |
-| GitHub Copilot | 가장 대중적        |
-| Cursor         | Agent 기능 강력   |
-| Codex          | CLI 기반 개발 지원  |
-| Cline          | VS Code Agent |
-| Roo Code       | MCP 연동 가능     |
-
----
-
-### Agentic Development
-
-기존 개발 방식
-
-```text id="olddev1"
-개발자
- ↓
-설계
- ↓
-코딩
- ↓
-테스트
-```
-
-AI 활용 개발 방식
-
-```text id="newdev1"
-개발자
- ↓
-AI Agent
- ↓
-코드 생성
- ↓
-테스트 생성
- ↓
-리뷰
- ↓
-개선
-```
-
----
-
-### IDE Agent 아키텍처
-
-```text id="archdev1"
-개발자
-   ↓
-VS Code
-   ↓
-AI Agent
-(Copilot/Cursor/Codex)
-   ↓
-LLM
-(OpenAI/Ollama)
-   ↓
-코드 생성
-```
-
----
-
-## Track 2 진행 현황
-
-### 2026-06-19 - Continue 설치
-
-#### 1. Continue VS Code Extension 설치
-
-설치 완료
-
-```bash
-code --install-extension Continue.continue
-```
-
-결과
-
-```text
-Extension 'continue.continue' v2.0.0 was successfully installed.
-```
-
-✅ 설치 완료
-
----
-
-#### 2. Continue 설정 파일 생성
-
-경로
-
-```text
-~/.continue/config.json
-```
-
-설정 내용
-
-```json
-{
-  "models": [
-    {
-      "title": "Qwen3 Local",
-      "provider": "ollama",
-      "model": "qwen3:4b",
-      "apiBase": "http://172.30.236.141:11434"
-    },
-    {
-      "title": "Gemma Local",
-      "provider": "ollama",
-      "model": "gemma3:4b",
-      "apiBase": "http://172.30.236.141:11434"
-    }
-  ],
-  "tabAutocompleteModel": {
-    "title": "Qwen3 Tab Complete",
-    "provider": "ollama",
-    "model": "qwen3:4b",
-    "apiBase": "http://172.30.236.141:11434"
-  },
-  "allowAnonymousTelemetry": false,
-  "userEmail": "user@local",
-  "temperature": 0.7
-}
-```
-
-✅ 설정 완료
-
----
-
-#### 3. Ollama 연동 확인
-
-Ollama 상태
-
-```bash
-systemctl status ollama
-```
-
-결과
-
-```text
-● ollama.service - Ollama Service
-   Active: active (running)
-   Memory: 896.0M
-```
-
-✅ Ollama 정상 실행
-
----
-
-#### 4. Ollama API 테스트
-
-모델 목록 조회
-
-```bash
-curl http://172.30.236.141:11434/api/tags
-```
-
-결과
-
-```json
-{
-  "models": [
-    {
-      "name": "qwen3:4b",
-      "model": "qwen3:4b",
-      "size": 2497293931,
-      "details": {
-        "parameter_size": "4.0B",
-        "context_length": 262144
-      }
-    }
-  ]
-}
-```
-
-✅ API 정상 작동
-
----
-
-## 실습 절차
-
-### 1. Continue 사용법
-
-VS Code에서 Continue 탭 열기
-
-```text
-Ctrl+Shift+X → Continue 확인
-또는
-Ctrl+L (Continue Chat 오픈)
-```
-
-주요 기능
-
-* Chat: `Ctrl+L`
-* Tab Autocomplete: 코드 입력 시 자동 제안
-* Command Palette: `Cmd+Shift+P` → "Continue"
-
----
-
-#### 5. LLM 응답 테스트
-
-코드 생성 테스트
-
-```bash
-curl -s http://172.30.236.141:11434/api/generate \
--d '{
-  "model": "qwen3:4b",
-  "prompt": "Python으로 간단한 Hello World 프로그램을 만들어줘",
-  "stream": false
-}'
-```
-
-✅ LLM 응답 정상
-
----
-
-### 5. Cline VS Code Extension 설치
-
-설치 완료
-
-```bash
-code --install-extension saoudrizwan.claude-dev
-```
-
-결과
-
-```text
-Extension 'saoudrizwan.claude-dev' v3.89.2 was successfully installed.
-```
-
-✅ 설치 완료
-
----
-
-### 6. Cline 아키텍처
+## 실습 구성
 
 ```text
 VS Code
-  ↓
-Cline Extension (MCP 기반)
-  ↓
-도구 및 리소스 자동 발견
-  ↓
-LLM 호출
-  ↓
-파일/Git 자동 조작
+├── Continue
+│   ├── qwen3:4b  : Chat + Agent 후보
+│   └── gemma3:4b : Chat 비교용
+├── Cline         : 설치 완료, 비교 실습 예정
+└── Codex         : 기준 구현 및 검증
+        │
+        ▼
+Ollama API (172.30.236.141:11434)
 ```
 
----
+## 도구 선택
 
-### 7. Cline vs Continue 비교
+| 도구 | 역할 | 현재 상태 |
+|---|---|---|
+| Continue | 여러 LLM을 연결하는 VS Code 확장 | Qwen3/Gemma3 연결 완료 |
+| Cline | 파일·터미널 중심 IDE Agent | 설치 완료, Ollama 비교 예정 |
+| Codex | 코드 구현·검증 기준 | 웹 앱 구현 및 Continue 결과 보정 완료 |
+| Ollama | 로컬 모델 실행 API | 정상 동작 |
 
-| 항목 | Continue | Cline |
-|------|----------|-------|
-| 설정 난이도 | ⭐ 쉬움 | ⭐⭐ 중간 |
-| 코드 자동 완성 | ✅ 우수 | ⚠️ 제한적 |
-| 프로젝트 분석 | ⭐ 기본 | ⭐⭐⭐ 강력 |
-| 파일 자동 조작 | ❌ 없음 | ✅ 있음 |
-| Git 통합 | ❌ 없음 | ✅ 있음 |
-| MCP 지원 | ⚠️ 제한적 | ✅ 완벽 |
-| 로컬 LLM | ✅ 우수 | ⚠️ 복잡 |
+## 모델 역할
 
----
+| 모델 | Ollama capabilities | 사용 범위 |
+|---|---|---|
+| `qwen3:4b` | completion, tools, thinking | Continue Chat 및 Agent |
+| `gemma3:4b` | completion, vision | Continue Chat·코드 생성 비교 |
 
-## 실습 절차
+Gemma3 4B는 Ollama에서 tools를 지원하지 않으므로 `tool_use`를 강제로 선언하지 않는다. Agent 비교는 Qwen3를 기준으로 한다.
 
-### 1. Continue 사용법
-
-VS Code에서 Continue 탭 열기
-
-```text
-Ctrl+Shift+X → Continue 확인
-또는
-Ctrl+L (Continue Chat 오픈)
-```
-
-주요 기능
-
-* Chat: `Ctrl+L`
-* Tab Autocomplete: 코드 입력 시 자동 제안
-* Command Palette: `Cmd+Shift+P` → "Continue"
-
----
-
-### 2. Cline 설정 및 사용법
-
-VS Code에서 Cline 패널 열기
-
-```text
-View → Command Palette → "Cline: Open"
-또는
-좌측 Sidebar 아이콘
-```
-
-Ollama 연동 설정
-
-```text
-Cline Settings → Models → Custom/Other
-Endpoint: http://172.30.236.141:11434
-Model: qwen3:4b
-```
-
----
-
-### 3. 코드 생성 실습 (Continue)
-
-사용자 프롬프트
-
-```text
-"Spring Boot REST API로 간단한 CRUD 만들어줘"
-```
-
-결과
-
-```
-- Controller 생성
-- Service 생성  
-- Repository 생성
-- DTO 생성
-```
-
----
-
-### 4. 프로젝트 분석 (Cline)
-
-사용자 프롬프트
-
-```text
-"@all 이 프로젝트의 구조를 분석해서 README.md 만들어줘"
-```
-
-Cline 자동 수행
-
-```
-1. 파일 시스템 스캔
-2. 프로젝트 구조 분석
-3. README.md 생성
-4. Git 커밋
-```
-
----
-
-## 다음 단계
-
-Track 3: Agent Basic (LangChain/LangGraph 학습)
-
-- [ ] Tool Calling 이해
-- [ ] Agent Workflow 학습
-- [ ] Multi-Agent Pattern 실습
-
----
-
-### 5. Local LLM 연동
-
-Ollama 실행
-
-```bash id="ollama11"
-ollama run qwen3:4b
-```
-
-목표
-
-* 로컬 모델 기반 AI 개발 환경 구성
-
----
-
-### 6. Spring Boot 프로젝트 분석
-
-대상
-
----
-
-### Troubleshooting: Continue extension (streaming & schema)
-
-- 증상: VS Code `Problems`에 "Problems loading reference 'file:///c:/Users/sedof/.vscode/extensions/continue.continue-1.2.16-win32-x64...'" 오류가 지속적으로 발생함. Continue UI가 로컬 모델을 드롭다운에서 보여주지 않음.
-- 원인 발견:
-  - 사용자 `settings.json`에 오래된 확장(continue.continue-1.2.16)을 가리키는 `yaml.schemas` 항목이 남아 있었음.
-  - Ollama 스트리밍 응답은 NDJSON 토큰 청크로 전달되므로 Continue UI에서 생성 과정을 바로 표시하는 데 적합함.
-- 조치 내용:
-  1. `settings.json`에서 오래된 schema 참조를 제거하여 VS Code가 더 이상 존재하지 않는 확장 경로를 참조하지 않도록 수정함.
- 2. `c:\Users\sedof\.continue\config.yaml`에 각 모델 항목에 `stream: true`를 추가하여 Continue가 Ollama에 스트리밍 호출을 하도록 설정함.
- 3. WSL에서 `curl` 스트리밍 호출로 `qwen3:4b`의 토큰 생성이 정상 동작함을 확인함 (`stream=true` 사용).
-- 결과: Ollama의 스트리밍과 비스트리밍 호출 모두 정상 응답을 반환함을 확인. Continue에는 점진적으로 응답을 표시하기 위해 `stream: true`를 사용함.
-- 권장 다음 단계:
-  1. VS Code를 재시작(또는 Reload Window)해서 Continue가 새 설정(`c:\Users\sedof\.continue\config.yaml`)을 읽도록 함.
-  2. Continue에서 모델 드롭다운에 `qwen3-local`이 보이는지 확인하고 채팅 생성 테스트 수행.
-  3. 문제가 지속될 경우: 확장 제거(`code --uninstall-extension Continue.continue`), 남은 폴더 삭제(`C:\Users\sedof\.vscode\extensions\continue.*`), 재설치 후 로그 검토 권장.
-
-참고: 스트리밍 테스트 명령
-
-```bash
-curl -sN --max-time 120 -X POST 'http://172.30.236.141:11434/api/generate' \
-  -H 'Content-Type: application/json' \
-  -d '{"model":"qwen3:4b","prompt":"Hello from test","stream":true}' | head -n 40
-```
-
-이 섹션은 추후 발생하는 IDE Agent 관련 문제를 빠르게 진단하는 용도로 업데이트하세요.
-
-* 현재 업무 프로젝트
-* 개인 프로젝트
-
-실습
-
-```text id="analysis11"
-프로젝트 구조 설명해줘
-```
-
-```text id="analysis12"
-Controller 구조 분석해줘
-```
-
-```text id="analysis13"
-개선 포인트 알려줘
-```
-
----
-
-### 7. 코드 생성 실습
-
-예제
-
-```text id="codegen11"
-Spring Boot CRUD 생성
-```
-
-생성 항목
-
-* Controller
-* Service
-* Repository
-* DTO
-
----
-
-### 8. 테스트 코드 생성
-
-예제
-
-```text id="testgen11"
-JUnit 테스트 코드 생성
-```
-
-생성 항목
-
-* Unit Test
-* Integration Test
-
----
-
-### 9. 코드 리뷰 실습
-
-예제
-
-```text id="review11"
-이 코드 리뷰해줘
-```
-
-확인 항목
-
-* 성능
-* 보안
-* 가독성
-* 유지보수성
-
----
-
-## TODO
+## 진행 결과
 
 ### 환경 구축
 
-* [ ] VS Code 설치
-* [ ] GitHub Copilot 설치
-* [ ] Cursor 설치
-* [ ] Codex 설치
-
-### 실습
-
-* [ ] 코드 생성
-* [ ] 테스트 코드 생성
-* [ ] 코드 리뷰
-* [ ] 문서 생성
-* [ ] Local LLM 연동
-
-### 문서화
-
-* [ ] GitHub 업로드
-* [ ] 블로그 작성
-
----
-
-## 검증 방법
-
-### 기능 검증
-
-AI를 통해
-
-* Controller 생성
-* Service 생성
-* SQL 생성
-
-가능 여부 확인
-
----
-
-### 품질 검증
-
-직접 작성 코드와 비교
-
-비교 항목
-
-* 가독성
-* 생산성
-* 유지보수성
-
----
-
-### 생산성 검증
-
-측정 항목
-
-* 코드 작성 시간
-* 테스트 작성 시간
-* 문서 작성 시간
-
----
-
-### 재현 검증
-
-동일 프롬프트 입력 시
-
-* 동일 결과 생성 여부
-* 품질 유지 여부
-
-확인
-
----
-
-## 결과물
-
-### 코드
-
-* AI 생성 코드
-* 테스트 코드
-* 리팩토링 코드
-
-### 문서
-
-* 코드 리뷰 결과
-* 개발 가이드
-* 프롬프트 모음
-
-### 다이어그램
-
-* IDE Agent Architecture
-* Agentic Development Flow
-
----
-
-## 회고
-
-### 배운 점
-
-* AI 기반 개발 방식 이해
-* Agent 활용 방법 이해
-* 코드 생성 자동화 경험
-
-### 개선점
-
-* 프롬프트 품질 향상 필요
-* 검증 프로세스 정립 필요
-* 코드 리뷰 기준 정립 필요
-
-### 다음 단계
-
-* MCP 연동
-* Tool Calling
-* Agent 개발
-
----
-
-## GitHub 업로드 기준
-
-### 필수
-
-* README.md
-* 설치 방법
-* 사용 방법
-
-### 권장
-
-* Prompt 예제
-* 코드 생성 결과
-* 테스트 결과
-
-### 스크린샷
-
-* VS Code
-* Copilot
-* Cursor
-* Codex
-* 코드 생성 결과
-
----
-
-## 블로그 작성 포인트
-
-### 문제 정의
-
-왜 IDE Agent를 사용하려고 했는가?
-
-* 생산성 향상
-* 반복 작업 감소
-* 코드 품질 향상
-
----
-
-### 구현 방법
-
-* VS Code 설치
-* Copilot 설치
-* Cursor 설치
-* Local LLM 연동
-
----
-
-### 트러블슈팅
-
-예상 사례
-
-* Extension 충돌
-* 모델 연결 실패
-* 응답 속도 문제
-* 컨텍스트 부족
-
----
-
-### 결과
-
-* 코드 생성 자동화
-* 테스트 자동화
-* 문서 생성 자동화
-
----
-
-## 면접 포인트
-
-### IDE Agent란 무엇인가?
-
-개발자의 작업을 지원하는 AI 기반 개발 Assistant이다.
-
-주요 역할
-
-* 코드 생성
-* 코드 리뷰
-* 테스트 생성
-* 문서 생성
-
----
-
-### 왜 Cursor를 사용하는가?
-
-장점
-
-* Agent 기능 강력
-* 프로젝트 전체 분석 가능
-* 코드 수정 능력 우수
-* AI Native IDE
-
----
-
-### 왜 Codex를 사용하는가?
-
-장점
-
-* CLI 환경 지원
-* 코드 생성 자동화
-* 문서 생성 자동화
-* 반복 작업 자동화
-
----
-
-### GitHub Copilot과 Cursor 차이는?
-
-| 항목       | Copilot | Cursor |
-| -------- | ------- | ------ |
-| 코드 자동완성  | 강점      | 지원     |
-| Agent 기능 | 제한적     | 강력     |
-| 프로젝트 분석  | 제한적     | 가능     |
-| 코드 수정    | 일부      | 우수     |
-
----
-
-### 대안은 무엇인가?
-
-* Cline
-* Roo Code
-* Continue
-* JetBrains AI Assistant
-
----
-
-### 운영 시 고려사항
-
-* 소스코드 보안
-* 개인정보 포함 여부
-* 비용 관리
-* 프롬프트 관리
-* 생성 코드 검증
-
----
-
-### AI Platform Engineer 관점 핵심 포인트
-
-IDE Agent는 단순한 코딩 도구가 아니라 향후 구축할 Agent 시스템의 가장 쉬운 입문 사례이다.
-
-학습 흐름
-
-```text id="agentflow1"
-IDE Agent
-    ↓
-Tool Calling
-    ↓
-MCP
-    ↓
-Kubernetes Agent
-    ↓
-Multi-Agent
-    ↓
-AI Operations Platform
-```
-
----
-
-### 실무 적용 포인트
-
-현재 보유 기술 스택에 적용 가능
-
-* Spring Boot 코드 생성
-* PostgreSQL SQL 생성
-* Kafka 연계 코드 생성
-* Kubernetes YAML 생성
-* OpenTelemetry 설정 생성
-
-즉, 기존 백엔드 개발자를 AI 기반 플랫폼 엔지니어로 전환하는 첫 단계라고 볼 수 있다.
+- [x] Continue 2.1.0 설치
+- [x] Cline 3.89.2 설치
+- [x] Ollama 0.30.10 연결
+- [x] `qwen3:4b` 설치
+- [x] `gemma3:4b` 설치
+- [x] 스트리밍 응답 확인
+
+### Continue 실습
+
+- Qwen3 Chat 응답 확인
+- Qwen3 Agent 모드가 소스와 명령을 대화로 제시하고 사용자가 복사·붙여넣기해 `continue_web_demo`의 파일 두 개를 생성·실행
+- Agent가 파일 쓰기·터미널 도구를 직접 호출하지 않았고 응답도 느렸으며 수동 반영한 최초 구현은 실행 가능한 통합 상태가 아니었음
+- 요구한 덧셈 대신 곱셈 앱을 생성해 요구사항 준수 문제가 확인됨
+- Gemma3는 Chat 비교가 가능하지만 도구 호출은 지원하지 않음
+- Cline에서 Gemma3 사용 시 tools 미지원 오류로 3회 자동 재시도 후 실패
+
+### Codex 기준 구현
+
+- `addition_app.py`와 `web/index.html`로 실행 가능한 덧셈 앱 구현
+- 정적 화면, 덧셈 API, 오류 처리를 자동 검증
+- Continue가 생성한 곱셈 앱의 서버·API·UI를 보정하고 포트 8001에서 검증
+
+## 핵심 관찰
+
+1. 로컬 4B 모델은 간단한 Chat과 코드 초안에는 사용할 수 있다.
+2. Agent 작업은 모델의 `tools` capability가 반드시 필요하다.
+3. 파일을 생성했다는 사실만으로 작업 성공을 판단할 수 없다.
+4. 요구사항 준수, 실행 성공, 오류 처리까지 검증해야 한다.
+5. 모델 메타데이터의 `tools` capability가 실제 구조화된 도구 호출 성공을 보장하지는 않는다.
+6. 동시에 여러 Ollama 요청을 실행하면 대기열 때문에 벤치마크가 왜곡될 수 있다.
+7. 로컬 모델은 크레딧 비용이 없지만 응답 시간과 수정 비용을 함께 고려해야 한다.
+
+## 검증 기준
+
+| 영역 | 확인 항목 |
+|---|---|
+| 연결 | 모델 목록과 응답 수신 여부 |
+| Chat | 프롬프트 준수와 코드 문법 |
+| Agent | 실제 파일 생성·수정 여부 |
+| 통합 | 프론트엔드와 백엔드 연결 여부 |
+| 실행 | HTTP 상태와 계산 결과 |
+| 품질 | 오류 처리, 경로 분리, 하드코딩 여부 |
+| 성능 | 첫 응답, 전체 시간, tokens/s |
+
+## 다음 단계
+
+- [x] Continue 요청을 모두 중단한 상태에서 Qwen3 단독 벤치마크 재실행
+- [x] Continue Agent + Qwen3의 자동 파일 생성 검증(도구 미호출, 사용자 수동 반영)
+- [ ] Gemma3 Chat에 동일한 코드 생성 프롬프트 적용
+- [x] Cline + Qwen3로 동일 과제 수행(첫 응답 timeout)
+- [x] Continue, Cline, Codex의 성공률·시간·수정 횟수 비교
+- [ ] 실행 화면과 Agent 승인 과정 스크린샷 저장
+
+## 기준 문서
+
+- [Continue 사용 가이드](Continue_Usage_Guide.md)
+- [Continue 로컬 LLM 벤치마크 보고서](Continue_Local_LLM_Benchmark_Report.md)
+- [로컬 LLM 구축](01_Local_ChatGPT.md)
+- [Agent 기본](03_Agent_Basic.md)

@@ -241,7 +241,8 @@ Continue + Cline 병행 사용
 ## 관련 문서
 
 - docs/02_IDE_Agent.md
-- docs/02_IDE_Agent_Setup_Guide.md
+- docs/Continue_Usage_Guide.md
+- docs/Continue_Local_LLM_Benchmark_Report.md
 
 ## 관련 명령어
 

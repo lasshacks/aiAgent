@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+debug.log
+agent_basic/memory.json
+agent_basic/memory.json.tmp
+.venv/
+.venv-wsl/
