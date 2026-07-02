@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ai-platform-study": {
+      "command": "D:\\AI_Platform_Engineering_Lab\\.venv\\Scripts\\python.exe",
+      "args": [
+        "D:\\AI_Platform_Engineering_Lab\\mcp_basic\\server.py"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
